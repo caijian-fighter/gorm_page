@@ -1,7 +1,8 @@
-package gorm_page
+package v0
 
 import (
 	"fmt"
+	"github.com/caijian-fighter/gorm_page"
 	"gorm.io/gorm"
 	"testing"
 )
@@ -17,9 +18,9 @@ func TestGormPageReflectTest(t *testing.T) {
 		PageNo:   1,
 		PageSize: 10,
 	}
-	u := User{}
+	u := gorm_page.User{}
 
-	query := db.Debug().Where("user_id > ?", 1)
+	query := gorm_page.db.Debug().Where("user_id > ?", 1)
 	err := u.SelectPageList(&p, query) //err := SelectPage(&p, query, User{})
 	if err != nil {
 		t.Fatalf("page Err:%v", err)
@@ -27,7 +28,7 @@ func TestGormPageReflectTest(t *testing.T) {
 	fmt.Printf("%#v\n", p)
 }
 
-func (u *User) SelectPageList(p *Page, query *gorm.DB) error {
-	err := selectPage(p, query, User{})
+func (u *gorm_page.User) SelectPageList(p *Page, query *gorm.DB) error {
+	err := SelectPage(p, query, gorm_page.User{})
 	return err
 }

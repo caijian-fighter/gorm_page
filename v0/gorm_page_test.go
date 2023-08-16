@@ -1,23 +1,24 @@
-package gorm_page
+package v0
 
 import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/caijian-fighter/gorm_page"
 	"net/http"
 	"testing"
 )
 
 // 查询实例
 func TestGormOpenAndSearch(t *testing.T) {
-	user := User{}
+	user := gorm_page.User{}
 	db.Debug().Table("user").Where("user_id = ?", 1).Last(&user)
 	fmt.Printf("%#v\n", user)
 }
 
 func TestHttpRequest(t *testing.T) {
 	url := fmt.Sprintf("http://api.funny96.com")
-	data := User{}
+	data := gorm_page.User{}
 	stu, err := json.Marshal(&data)
 	reader := bytes.NewReader(stu)
 	s, err := Post(reader, url)
@@ -38,7 +39,7 @@ func TestHttpRequest(t *testing.T) {
 
 func TestGormPagination(t *testing.T) {
 
-	users := new([]User)
+	users := new([]gorm_page.User)
 	url := "http://api.funny96.com"
 	pageInfo := PageInfo{
 		page:      "1",
@@ -50,7 +51,7 @@ func TestGormPagination(t *testing.T) {
 		fmt.Printf("Error %v\n", err)
 	}
 
-	userModel := User{}
+	userModel := gorm_page.User{}
 	_ = db.Debug().Model(&userModel).Where("user_id > ?", 1).Scopes(Paginate(r)).Last(users)
 
 	fmt.Printf("user: %v\n", users)

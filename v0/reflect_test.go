@@ -1,7 +1,8 @@
-package gorm_page
+package v0
 
 import (
 	"fmt"
+	"github.com/caijian-fighter/gorm_page"
 	"reflect"
 	"testing"
 )
@@ -15,7 +16,7 @@ import (
 // 反射创建对应的model的数组
 func TestReflectModel(t *testing.T) {
 	var i interface{}
-	model := User{}
+	model := gorm_page.User{}
 	i = model
 
 	ty := reflect.TypeOf(i)      // 获取类型

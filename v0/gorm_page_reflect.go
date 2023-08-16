@@ -1,4 +1,4 @@
-package gorm_page
+package v0
 
 import (
 	"gorm.io/gorm"
@@ -17,6 +17,25 @@ type Page struct {
 	Total    int64       `json:"total"` // 总记录数
 	Pages    int64       `json:"pages"` // 总页数
 	List     interface{} `json:"list"`  // 实际的list数据
+}
+
+func SelectPage(p *Page, query *gorm.DB, model interface{}) (e error) {
+	e = nil
+	query.Model(&model).Count(&p.Total)
+	if p.Total == 0 {
+		p.List = []interface{}{}
+		return
+	}
+
+	list := reflect.MakeSlice(reflect.SliceOf(reflect.TypeOf(model)), 0, 0).Interface()
+	//list := reflect.Zero(reflect.SliceOf(reflect.TypeOf(model))).Interface()
+	e = query.Model(&model).Scopes(GormPaginate(p)).Last(&list).Error
+	if e != nil {
+		return
+	}
+	p.List = list
+
+	return
 }
 
 func GormPaginate(page *Page) func(db *gorm.DB) *gorm.DB {
@@ -42,23 +61,4 @@ func GormPaginate(page *Page) func(db *gorm.DB) *gorm.DB {
 		offset := int((p - 1) * size)
 		return db.Offset(offset).Limit(int(size))
 	}
-}
-
-func selectPage(p *Page, query *gorm.DB, model interface{}) (e error) {
-	e = nil
-	query.Model(&model).Count(&p.Total)
-	if p.Total == 0 {
-		p.List = []interface{}{}
-		return
-	}
-
-	list := reflect.MakeSlice(reflect.SliceOf(reflect.TypeOf(model)), 0, 0).Interface()
-	//list := reflect.Zero(reflect.SliceOf(reflect.TypeOf(model))).Interface()
-	e = query.Model(&model).Scopes(GormPaginate(p)).Last(&list).Error
-	if e != nil {
-		return
-	}
-	p.List = list
-
-	return
 }
